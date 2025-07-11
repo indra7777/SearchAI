@@ -1,0 +1,174 @@
+{
+  "experiment_name": "ecommerce_fashion_pipeline",
+  "data_dir": "data/ecommerce",
+  "checkpoint_dir": "checkpoints/fashion",
+  "output_dir": "outputs/fashion",
+  "log_dir": "logs/fashion",
+  
+  "dataset_type": "fashion",
+  "primary_datasets": ["deepfashion2", "fashioniq", "polyvore"],
+  
+  "model_config": {
+    "backbone": "efficientnet-b2",
+    "input_size": 512,
+    "fashion_specific": true,
+    "landmark_detection": true,
+    "compatibility_analysis": true,
+    "multi_view_support": false
+  },
+  
+  "training": {
+    "batch_size": 20,
+    "num_epochs": 80,
+    "learning_rate": 1e-4,
+    "weight_decay": 1e-5,
+    "optimizer": "adamw",
+    "scheduler": "cosine",
+    "warmup_epochs": 5,
+    "gradient_clip_norm": 1.0
+  },
+  
+  "data": {
+    "num_workers": 6,
+    "pin_memory": true,
+    "image_size": 512,
+    "augmentation_type": "fashion_specific",
+    "augmentation": {
+      "horizontal_flip": 0.5,
+      "vertical_flip": 0.05,
+      "rotation": 5,
+      "brightness": 0.15,
+      "contrast": 0.15,
+      "saturation": 0.15,
+      "hue": 0.05,
+      "background_change": 0.2,
+      "color_jitter": 0.3,
+      "random_erasing": 0.1
+    }
+  },
+  
+  "ecommerce_tasks": {
+    "product_detection": {
+      "weight": 1.0,
+      "classes": 20,
+      "categories": [
+        "dress", "shirt", "pants", "skirt", "jacket", "coat", "sweater",
+        "shoes", "boots", "sandals", "sneakers", "bag", "hat", "jewelry",
+        "watch", "belt", "scarf", "gloves", "sunglasses", "accessories"
+      ]
+    },
+    "attribute_recognition": {
+      "weight": 0.8,
+      "attribute_groups": {
+        "color": {
+          "classes": 15,
+          "labels": ["black", "white", "red", "blue", "green", "yellow", "orange", 
+                    "purple", "pink", "brown", "gray", "navy", "beige", "gold", "silver"]
+        },
+        "material": {
+          "classes": 12,
+          "labels": ["cotton", "silk", "leather", "wool", "polyester", "denim", 
+                    "linen", "cashmere", "synthetic", "fur", "velvet", "lace"]
+        },
+        "style": {
+          "classes": 25,
+          "labels": ["casual", "formal", "vintage", "bohemian", "gothic", "preppy",
+                    "sporty", "elegant", "trendy", "classic", "minimalist", "romantic",
+                    "edgy", "chic", "retro", "modern", "urban", "country", "punk",
+                    "hipster", "professional", "party", "beach", "winter", "summer"]
+        },
+        "occasion": {
+          "classes": 8,
+          "labels": ["work", "party", "casual", "sport", "formal", "vacation", "date", "everyday"]
+        },
+        "season": {
+          "classes": 4,
+          "labels": ["spring", "summer", "fall", "winter"]
+        }
+      }
+    },
+    "fashion_landmarks": {
+      "weight": 0.6,
+      "num_landmarks": 8,
+      "landmarks": [
+        "neckline", "left_shoulder", "right_shoulder", "left_sleeve_end",
+        "right_sleeve_end", "waistline", "hemline", "center_front"
+      ]
+    },
+    "outfit_compatibility": {
+      "weight": 0.5,
+      "pair_types": ["top_bottom", "dress_shoes", "bag_outfit", "accessories_outfit"]
+    },
+    "size_estimation": {
+      "weight": 0.4,
+      "size_ranges": ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    }
+  },
+  
+  "fashion_specific": {
+    "trend_analysis": false,
+    "color_matching": true,
+    "style_transfer": false,
+    "virtual_try_on": false,
+    "size_recommendation": true,
+    "brand_recognition": true
+  },
+  
+  "loss_weights": {
+    "detection_loss": 1.0,
+    "attribute_loss": 0.8,
+    "landmark_loss": 0.6,
+    "compatibility_loss": 0.5,
+    "size_loss": 0.4
+  },
+  
+  "validation": {
+    "frequency": 2,
+    "metrics": [
+      "detection_mAP",
+      "attribute_accuracy",
+      "landmark_accuracy",
+      "compatibility_accuracy",
+      "size_accuracy"
+    ],
+    "save_predictions": true,
+    "visualize_results": true
+  },
+  
+  "checkpointing": {
+    "save_frequency": 10,
+    "save_best": true,
+    "max_checkpoints": 5,
+    "monitor_metric": "val_total_loss"
+  },
+  
+  "early_stopping": {
+    "patience": 15,
+    "min_delta": 1e-4,
+    "monitor": "val_attribute_accuracy"
+  },
+  
+  "logging": {
+    "log_frequency": 50,
+    "use_wandb": true,
+    "wandb_project": "fashion-ai-pipeline",
+    "save_images": true,
+    "save_predictions": true,
+    "log_gradients": false
+  },
+  
+  "hardware": {
+    "device": "cuda",
+    "mixed_precision": true,
+    "compile_model": false,
+    "channels_last": true,
+    "benchmark_mode": true
+  },
+  
+  "evaluation": {
+    "test_time_augmentation": false,
+    "ensemble_models": false,
+    "confidence_threshold": 0.5,
+    "nms_threshold": 0.5
+  }
+}

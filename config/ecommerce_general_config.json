@@ -1,0 +1,183 @@
+{
+  "experiment_name": "ecommerce_general_pipeline",
+  "data_dir": "data/ecommerce",
+  "checkpoint_dir": "checkpoints/general",
+  "output_dir": "outputs/general",
+  "log_dir": "logs/general",
+  
+  "dataset_type": "general_ecommerce",
+  "primary_datasets": ["shopee", "amazon_berkeley", "flipkart_grid"],
+  
+  "model_config": {
+    "backbone": "efficientnet-b1",
+    "input_size": 448,
+    "multi_category": true,
+    "brand_detection": true,
+    "price_estimation": true,
+    "quality_assessment": true
+  },
+  
+  "training": {
+    "batch_size": 28,
+    "num_epochs": 60,
+    "learning_rate": 2e-4,
+    "weight_decay": 1e-5,
+    "optimizer": "adamw",
+    "scheduler": "step",
+    "step_size": 20,
+    "gamma": 0.1,
+    "warmup_epochs": 3,
+    "gradient_clip_norm": 1.0
+  },
+  
+  "data": {
+    "num_workers": 8,
+    "pin_memory": true,
+    "image_size": 448,
+    "augmentation_type": "standard",
+    "augmentation": {
+      "horizontal_flip": 0.5,
+      "vertical_flip": 0.1,
+      "rotation": 10,
+      "brightness": 0.2,
+      "contrast": 0.2,
+      "saturation": 0.2,
+      "hue": 0.1,
+      "gaussian_blur": 0.1,
+      "random_erasing": 0.15,
+      "cutmix": 0.2,
+      "mixup": 0.2
+    }
+  },
+  
+  "ecommerce_tasks": {
+    "product_detection": {
+      "weight": 1.0,
+      "classes": 50,
+      "main_categories": [
+        "electronics", "fashion", "home_garden", "sports_outdoors", "beauty_health",
+        "books_media", "toys_games", "automotive", "jewelry_watches", "grocery_food"
+      ],
+      "subcategories": 100
+    },
+    "category_classification": {
+      "weight": 0.9,
+      "hierarchical": true,
+      "levels": 3,
+      "categories": {
+        "level_1": 10,
+        "level_2": 30,
+        "level_3": 100
+      }
+    },
+    "brand_recognition": {
+      "weight": 0.6,
+      "num_brands": 200,
+      "logo_detection": true,
+      "text_based": true
+    },
+    "quality_assessment": {
+      "weight": 0.7,
+      "quality_metrics": [
+        "image_quality", "product_visibility", "background_cleanliness",
+        "lighting_quality", "authenticity_score"
+      ]
+    },
+    "price_estimation": {
+      "weight": 0.4,
+      "price_ranges": 10,
+      "ranges": [
+        "0-10", "10-25", "25-50", "50-100", "100-200", 
+        "200-500", "500-1000", "1000-2000", "2000-5000", "5000+"
+      ],
+      "luxury_detection": true
+    },
+    "attribute_extraction": {
+      "weight": 0.5,
+      "attributes": {
+        "color": 20,
+        "material": 25,
+        "size": 10,
+        "weight": 8,
+        "brand": 200,
+        "model": 500
+      }
+    }
+  },
+  
+  "general_ecommerce": {
+    "multi_view_support": true,
+    "background_removal": true,
+    "text_detection": true,
+    "logo_detection": true,
+    "duplicate_detection": true,
+    "recommendation_features": true
+  },
+  
+  "loss_weights": {
+    "detection_loss": 1.0,
+    "category_loss": 0.9,
+    "brand_loss": 0.6,
+    "quality_loss": 0.7,
+    "price_loss": 0.4,
+    "attribute_loss": 0.5
+  },
+  
+  "validation": {
+    "frequency": 2,
+    "metrics": [
+      "detection_mAP",
+      "category_accuracy",
+      "brand_accuracy", 
+      "quality_correlation",
+      "price_accuracy",
+      "attribute_f1"
+    ],
+    "save_predictions": true,
+    "visualize_results": true
+  },
+  
+  "checkpointing": {
+    "save_frequency": 8,
+    "save_best": true,
+    "max_checkpoints": 5,
+    "monitor_metric": "val_category_accuracy"
+  },
+  
+  "early_stopping": {
+    "patience": 12,
+    "min_delta": 1e-4,
+    "monitor": "val_total_loss"
+  },
+  
+  "logging": {
+    "log_frequency": 100,
+    "use_wandb": true,
+    "wandb_project": "ecommerce-ai-pipeline",
+    "save_images": false,
+    "save_predictions": true,
+    "log_gradients": false
+  },
+  
+  "hardware": {
+    "device": "cuda",
+    "mixed_precision": true,
+    "compile_model": false,
+    "channels_last": true,
+    "benchmark_mode": true
+  },
+  
+  "evaluation": {
+    "test_time_augmentation": true,
+    "ensemble_models": false,
+    "confidence_threshold": 0.4,
+    "nms_threshold": 0.6
+  },
+  
+  "data_balancing": {
+    "category_balancing": true,
+    "brand_balancing": false,
+    "price_balancing": true,
+    "quality_balancing": false
+  }
+}
