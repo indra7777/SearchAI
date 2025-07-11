@@ -1,0 +1,105 @@
+{
+  "experiment_name": "visual_intelligence_v1",
+  "data_dir": "data/processed",
+  "checkpoint_dir": "checkpoints",
+  "output_dir": "outputs",
+  "log_dir": "logs",
+  
+  "model_config": {
+    "backbone": "efficientnet-b0",
+    "input_size": 640,
+    "feature_pyramid": true,
+    "mixed_precision": true
+  },
+  
+  "training": {
+    "batch_size": 16,
+    "num_epochs": 100,
+    "learning_rate": 1e-4,
+    "weight_decay": 1e-5,
+    "optimizer": "adamw",
+    "scheduler": "cosine",
+    "warmup_epochs": 5,
+    "gradient_clip_norm": 1.0
+  },
+  
+  "data": {
+    "num_workers": 4,
+    "pin_memory": true,
+    "image_size": 640,
+    "augmentation": {
+      "horizontal_flip": 0.5,
+      "vertical_flip": 0.1,
+      "rotation": 15,
+      "brightness": 0.2,
+      "contrast": 0.2,
+      "saturation": 0.2,
+      "hue": 0.1,
+      "gaussian_blur": 0.1,
+      "gaussian_noise": 0.1
+    }
+  },
+  
+  "num_classes": {
+    "objects": 80,
+    "relationships": 50,
+    "scenes": 365,
+    "emotions": 7,
+    "materials": 23,
+    "textures": 47,
+    "lighting_conditions": 8,
+    "genders": 2
+  },
+  
+  "task_weights": {
+    "object": 1.0,
+    "relationship": 0.8,
+    "scene": 0.6,
+    "emotion": 0.7,
+    "age": 0.5,
+    "gender": 0.6,
+    "material": 0.4,
+    "texture": 0.4,
+    "lighting": 0.3,
+    "shadow": 0.2,
+    "occlusion": 0.2
+  },
+  
+  "validation": {
+    "frequency": 1,
+    "metrics": [
+      "mAP",
+      "accuracy",
+      "f1_score",
+      "mae",
+      "angular_error"
+    ]
+  },
+  
+  "checkpointing": {
+    "save_frequency": 10,
+    "save_best": true,
+    "max_checkpoints": 5
+  },
+  
+  "early_stopping": {
+    "patience": 20,
+    "min_delta": 1e-4,
+    "monitor": "val_total_loss"
+  },
+  
+  "logging": {
+    "log_frequency": 100,
+    "use_wandb": false,
+    "wandb_project": "visual-intelligence-pipeline",
+    "save_images": true,
+    "save_predictions": true
+  },
+  
+  "hardware": {
+    "device": "cuda",
+    "mixed_precision": true,
+    "compile_model": false,
+    "channels_last": false
+  }
+}

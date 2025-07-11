@@ -1,0 +1,132 @@
+{
+  "experiment_name": "visual_intelligence_budget",
+  "data_dir": "data/processed",
+  "checkpoint_dir": "checkpoints",
+  "output_dir": "outputs",
+  "log_dir": "logs",
+  
+  "budget_mode": true,
+  "max_training_hours": 12,
+  "dataset_size_limit": 10000,
+  
+  "model_config": {
+    "backbone": "efficientnet-b0",
+    "input_size": 416,
+    "feature_pyramid": true,
+    "mixed_precision": true,
+    "reduced_complexity": true,
+    "freeze_backbone_epochs": 10
+  },
+  
+  "training": {
+    "batch_size": 32,
+    "num_epochs": 25,
+    "learning_rate": 3e-4,
+    "weight_decay": 1e-4,
+    "optimizer": "adamw",
+    "scheduler": "cosine",
+    "warmup_epochs": 2,
+    "gradient_clip_norm": 0.5,
+    "gradient_accumulation_steps": 1
+  },
+  
+  "data": {
+    "num_workers": 6,
+    "pin_memory": true,
+    "image_size": 416,
+    "subset_ratio": 0.1,
+    "fast_data_loading": true,
+    "cache_dataset": true,
+    "augmentation": {
+      "horizontal_flip": 0.5,
+      "rotation": 10,
+      "brightness": 0.1,
+      "contrast": 0.1,
+      "minimal_augmentation": true
+    }
+  },
+  
+  "num_classes": {
+    "objects": 20,
+    "relationships": 15,
+    "scenes": 50,
+    "emotions": 7,
+    "materials": 10,
+    "textures": 15
+  },
+  
+  "task_weights": {
+    "object": 1.0,
+    "scene": 0.8,
+    "emotion": 0.6,
+    "relationship": 0.4,
+    "material": 0.2,
+    "texture": 0.2
+  },
+  
+  "progressive_training": {
+    "enabled": true,
+    "phases": [
+      {
+        "name": "phase1_core",
+        "epochs": 10,
+        "tasks": ["object", "scene"],
+        "lr_multiplier": 1.0
+      },
+      {
+        "name": "phase2_extended",
+        "epochs": 10,
+        "tasks": ["object", "scene", "emotion", "relationship"],
+        "lr_multiplier": 0.5
+      },
+      {
+        "name": "phase3_full",
+        "epochs": 5,
+        "tasks": ["object", "scene", "emotion", "relationship", "material", "texture"],
+        "lr_multiplier": 0.1
+      }
+    ]
+  },
+  
+  "validation": {
+    "frequency": 2,
+    "metrics": ["accuracy", "f1_score"],
+    "fast_evaluation": true
+  },
+  
+  "checkpointing": {
+    "save_frequency": 5,
+    "save_best": true,
+    "max_checkpoints": 2,
+    "compress_checkpoints": true
+  },
+  
+  "early_stopping": {
+    "patience": 8,
+    "min_delta": 1e-3,
+    "monitor": "val_accuracy"
+  },
+  
+  "logging": {
+    "log_frequency": 100,
+    "use_wandb": false,
+    "minimal_logging": true,
+    "save_images": false,
+    "save_predictions": false
+  },
+  
+  "hardware": {
+    "device": "cuda",
+    "mixed_precision": true,
+    "compile_model": true,
+    "channels_last": true,
+    "benchmark_mode": true
+  },
+  
+  "cost_control": {
+    "max_cost_usd": 10,
+    "cost_per_hour": 0.40,
+    "auto_stop_on_budget": true,
+    "warn_at_percentage": 0.80
+  }
+}

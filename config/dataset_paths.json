@@ -1,0 +1,83 @@
+{
+  "coco": {
+    "path": "data/datasets/coco",
+    "description": "COCO dataset for object detection",
+    "url": "https://cocodataset.org/#download",
+    "files": [
+      "annotations/instances_train2017.json",
+      "annotations/instances_val2017.json",
+      "images/train2017/",
+      "images/val2017/"
+    ]
+  },
+  
+  "places365": {
+    "path": "data/datasets/places365standard_easyformat",
+    "description": "Places365 dataset for scene classification",
+    "url": "http://places2.csail.mit.edu/download.html",
+    "files": [
+      "places365_train_standard.txt",
+      "places365_val_standard.txt",
+      "categories_places365.txt",
+      "data_256/"
+    ]
+  },
+  
+  "dtd": {
+    "path": "data/datasets/dtd",
+    "description": "Describable Textures Dataset",
+    "url": "https://www.robots.ox.ac.uk/~vgg/data/dtd/",
+    "files": [
+      "images/",
+      "labels/train1.txt",
+      "labels/val1.txt",
+      "labels/test1.txt"
+    ]
+  },
+  
+  "fer2013": {
+    "path": "data/datasets/fer2013",
+    "description": "FER2013 dataset for emotion recognition",
+    "url": "https://www.kaggle.com/datasets/msambare/fer2013",
+    "files": [
+      "train/",
+      "test/"
+    ],
+    "optional": true
+  },
+  
+  "celeba": {
+    "path": "data/datasets/celeba",
+    "description": "CelebA dataset for facial attributes",
+    "url": "https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html",
+    "files": [
+      "img_align_celeba/",
+      "list_attr_celeba.txt",
+      "list_landmarks_align_celeba.txt"
+    ],
+    "optional": true
+  },
+  
+  "materials": {
+    "path": "data/datasets/materials",
+    "description": "Materials in Context dataset",
+    "url": "https://opensurfaces.cs.cornell.edu/publications/minc/",
+    "files": [
+      "images/",
+      "labels/"
+    ],
+    "optional": true
+  },
+  
+  "visual_genome": {
+    "path": "data/datasets/visual_genome",
+    "description": "Visual Genome for relationships",
+    "url": "https://visualgenome.org/api/v0/api_home.html",
+    "files": [
+      "images/",
+      "relationships.json",
+      "scene_graphs.json"
+    ],
+    "optional": true
+  }
+}
